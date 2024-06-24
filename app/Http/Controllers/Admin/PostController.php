@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Post;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
+use App\Models\Type;
 
 class PostController extends Controller
 {
@@ -23,7 +24,8 @@ class PostController extends Controller
      */
     public function create()
     {
-        return view('admin.posts.create');
+        $types = Type::all();
+        return view('admin.posts.create', compact('types'));
     }
 
     /**
@@ -32,14 +34,16 @@ class PostController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'title' => 'required',
+            'title' => 'required|max:255',
             'description' => 'required',
+            'type_id' => 'nullable|exists:types,id'
         ]);
 
         $newPost = new Post();
         $newPost->title = $request->title;
         $newPost->description = $request->description;
         $newPost->slug = Str::slug($request->title);
+        $newPost->type_id = $request->type_id;
         $newPost->save();
 
         return redirect()->route('admin.posts.index');
@@ -57,7 +61,8 @@ class PostController extends Controller
      */
     public function edit(Post $post)
     {
-        return view('admin.posts.edit', compact('post'));
+        $types = Type::all();
+        return view('admin.posts.edit', compact('post', 'types'));
     }
 
     /**
@@ -66,18 +71,19 @@ class PostController extends Controller
     public function update(Request $request, Post $post)
     {
         $request->validate([
-            'title' => 'required',
+            'title' => 'required|max:255',
             'description' => 'required',
+            'type_id' => 'nullable|exists:types,id'
         ]);
-
+    
         $post->title = $request->title;
         $post->description = $request->description;
         $post->slug = Str::slug($request->title);
+        $post->type_id = $request->type_id;
         $post->save();
-
+    
         return redirect()->route('admin.posts.index');
     }
-
     /**
      * Remove the specified resource from storage.
      */
