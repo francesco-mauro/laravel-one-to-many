@@ -10,14 +10,14 @@ class AddTypeIdToPostsTable extends Migration
     {
         Schema::table('posts', function (Blueprint $table) {
             $table->unsignedBigInteger('type_id')->nullable()->after('id'); 
-            $table->foreign('type_id')->references('id')->on('types')->onDelete('set null'); 
+            $table->foreign('type_id')->references('id')->on('types'); 
         });
     }
 
     public function down()
     {
         Schema::table('posts', function (Blueprint $table) {
-            $table->dropForeign(['type_id']);
+            $table->dropForeign('posts_type_id_foreign');
             $table->dropColumn('type_id');
         });
     }
